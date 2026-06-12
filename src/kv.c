@@ -28,13 +28,14 @@ int kv_put(kv_t *db, char *key, char *value){
 
         kv_entry_t *entry = &db->entries[real_indx];
 
-        if (entry->key && !strcmp(entry->key, key)){
+        if (entry->key && entry->key != (void*)TOMBSTONE && !strcmp(entry->key, key)){
             char *newval = strdup(value);
             if (!newval) return -1;
             entry->value = newval;
+            return 0;
         }
 
-        if (!entry->key || entry->key == TOMBSTONE) {
+        if (!entry->key || entry->key == (void*)TOMBSTONE) {
             char *newval = strdup(value);
             char *newkey = strdup(key);
             if (!newkey || !newval){
